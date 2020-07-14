@@ -1,0 +1,45 @@
+{
+  "name": "survey-test",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/react": "^10.4.6",
+    "bootstrap": "^3.3.7",
+    "bootstrap-slider": "^11.0.2",
+    "jquery": "^3.3.1",
+    "jquery-bar-rating": "^1.2.2",
+    "jquery-ui": "^1.12.1",
+    "nouislider": "^14.6.0",
+    "pretty-checkbox": "^3.0.3",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "1.1.4",
+    "select2": "^4.0.13",
+    "survey-creator": "^1.7.19",
+    "survey-pdf": "latest",
+    "survey-react": "^1.7.19",
+    "surveyjs-widgets": "^1.7.19"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
