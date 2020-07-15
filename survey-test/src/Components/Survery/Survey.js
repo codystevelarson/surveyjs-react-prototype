@@ -16,7 +16,7 @@ class Survey extends Component {
                 "title": "Please enter your name:",
                 "placeHolder": "Jon Snow",
                 "isRequired": true,
-                "custom": 99
+                "custom": 99,
             }, {
                 "name": "birthdate",
                 "type": "text",
@@ -43,6 +43,7 @@ class Survey extends Component {
             }
         ]
     };
+
     model = new Sjs.Model(this.json);
 
     onComplete(survey, options){
@@ -50,6 +51,12 @@ class Survey extends Component {
         console.log("Options", options);
 
         console.log("Data",survey.data);
+    }
+
+    componentDidMount(){
+        // fetch entry data here 
+        const entrydata = {name: "Cody", birthdate: "1989-08-07", color: "#2990ff", email: "test@test.com"};
+        this.model.data = entrydata;
     }
 
 
