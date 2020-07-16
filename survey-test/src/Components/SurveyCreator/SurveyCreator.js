@@ -74,8 +74,8 @@ class SurveyCreator extends Component {
       showLogicTab: false, 
       designerHeight: '900px',
       showState: true, // Displays status of survey "Modified, Saved, Saving..."
-      showPagesToolbox: false, // Disable pages
-      showPagesInTestSurveyTab: false, 
+      // showPagesToolbox: false, // Disable pages
+      // showPagesInTestSurveyTab: false, 
       // allowControlSurveyTitleVisibility: false,
       // questionTypes: ["text", "comment", "checkbox", "radiogroup", "dropdown", 'rating', 'boolean']
     };
@@ -83,7 +83,9 @@ class SurveyCreator extends Component {
       null,
       options
     );
-    
+    // Ensure unique question names
+    // this.surveyCreator.ensureUniqueNames();
+
     // Filter toolbox items to only allowed items
     // Can run a console.log on this.surveyCreator.toolbox.itemNames and add or remove items in this.toolboxItems
     this.surveyCreator.toolbox.itemNames.forEach(item => {
