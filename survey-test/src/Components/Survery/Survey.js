@@ -4,12 +4,35 @@ import * as Sjs from 'survey-react';
 
 class Survey extends Component {
     state = {
-        json: {
-            // "title": "Survey Title&Logo demo",
-            // "description": "Please take look at the survey title and logo. Test the settings on the right panel ->",
-            // "logo": "https://surveyjs.io/favicon.ico",
-            // "logoWidth": 60,
-            // "logoHeight": 60,
+        json: null,
+        model: null,
+        issues: []
+    }
+    
+
+    onComplete(survey, options){
+        // Save survey.data here 
+        // Send to api
+
+        // Example:
+        console.log("Survey", survey);
+        console.log("Options", options);
+        console.log("Data",survey.data);
+    }
+
+    componentDidMount(){
+        // Load survey here since it relies on API data
+        setTimeout(() => {
+            this.loadSurveyData();
+        }, 2000)
+    }
+
+    loadSurveyData() {
+        // Fetch Form Data from api here
+        // Store in state and use the data json to create survey model
+        // Example
+        const formData = {
+            "title": "SSSF Form Prototype",
             "questions": [
                 {
                     "name": "name",
@@ -17,7 +40,6 @@ class Survey extends Component {
                     "title": "Please enter your name:",
                     "placeHolder": "Jon Snow",
                     "isRequired": true,
-                    "custom": 99,
                 }, {
                     "name": "birthdate",
                     "type": "text",
@@ -42,98 +64,126 @@ class Survey extends Component {
                         }
                     ]
                 }
-            ]
-        },
-        model: null
-    }
-    
+            ]}
+        let model = new Sjs.Model(formData);
 
-     
 
-    onComplete(survey, options){
-        console.log("Survey", survey);
-        console.log("Options", options);
-
-        console.log("Data",survey.data);
-    }
-
-    componentDidMount(){
-        let model = new Sjs.Model(this.state.json);
-        console.log(model);
-        this.setState({model: model});
-        
-        // fetch entry data here 
-        // const entrydata = {name: "Cody", birthdate: "1989-08-07", color: "#2990ff", email: "test@test.com"};
-        // this.model.data = entrydata;
-    }
-
-    loadSurvey() {
-        const entrydata = {name: "Cody", birthdate: "1989-08-07", color: "#2990ff", email: "test@test.com"};
-        console.log(this.state.json);
-        let model = new Sjs.Model(this.state.json);
+        // Fetch Entry Data from Api here
+        // Example:
+        const entrydata = {name: "Cody", birthdate: "1989-08-07", color: "#2990ff", email: "test@test.com"}; // EXAMPLE DATA
         model.data = entrydata;
-        this.setState({model: model});
+
+
+        // Fetch Issue Data from api here
+        // Example:
+        // Multiple issues for 1 question
+        const issues = [
+            {
+                question: "name",
+                comment: "This name does not match our records"
+            },
+            {
+                question: "color",
+                comment: "Color is ugly"
+            },
+            {
+                question: "color",
+                comment: "Color does not exist"
+            }
+        ];
+
+        // Update state survey model and issues
+        this.setState({model: model, issues: issues, json: formData});
+        // this.addIssueButtons(model);
+        
     }
 
     clearSurvey() {
+        // Clears all values in the inputs
         this.state.model.clear();
-        // this.addIssueButtons();
-        // let model = new Sjs.Model(this.state.json);
-        // this.setState({model: model});    
     }
 
     qaValidator(s, options){
-        console.log("s", s);
+        console.log("survey", s);
         console.log("options", options);
-        let issues = ["name", "color"];
 
-        if(issues.indexOf(options.name) !== -1) {
-            options.error = "QA ISSUE HERE";
+        // Add any custom global validation here 
+        // Example:
+        if(options.name === "name") {
+            if (options.value === "fjorge")
+            options.error = "CUSTOM VALIDATION: Name cannot be fjorge";
         }
     }
 
     addIssue(question) {
-        alert("ADDING issue to " + question.propertyHash.name);  
+        // User properties from question to add an issue
+        // Can display a modal with a question info and comment box 
+        // Then save the issue in the DB
+
+        //Example
+        alert("ADDING issue to " + question.name);  
         console.log(question);
     }
 
     viewIssue(question){
-        alert("VIEWING issue to " + question.propertyHash.name);  
+        // View and handle Issue for question
+        // Can check user access to allow resolution of issue, etc.
+
+        // Example
+        const issues = this.state.issues.filter(i => i.question === question.name);
+        let comments = '';
+        issues.forEach(i => comments += "-" + i.comment + "\n")
+        alert(`Issue: ${question.name}\n${comments}`);  
         console.log(question);
     }
 
-    addIssueButtons() {
+    addIssueButtons(model) {
         let self = this;
-        this.state.model.onAfterRenderQuestion.add((survey, options) => {
-            //Add issues button
-            let hasIssue = options.question.name === "name";
-            let btns = [];
-            let btn = document.createElement('button');
-            btn.type = "button";
-            btn.style.position = "absolute";
-            btn.style.right = "0px";
+        model.onAfterRenderQuestion.add((survey, options) => {
+            //Find issue for question
+            let hasIssue = this.state.issues.find(i => i.question === options.question.name);
+            console.log("Issue for btns", hasIssue);
 
-            let hasIssueClass = hasIssue? "btn-danger" : "";
-            btn.className = `issue-btn btn ${hasIssueClass}`; 
-            btn.innerHTML = hasIssue ? "View Issue" : "Add Issue";
-            
+            // Possible to add multiple buttons conditionally
+            let btns = [];
+            let btn = null;
             var question = options.question;
-            btn.onclick = function () {
-                if(hasIssue){
+            // Create issue buttons
+            if (hasIssue){
+                btn = document.createElement('button');
+                btn.type = "button";
+                btn.style.margin = "5px";
+
+                btn.className = `issue-btn btn ${hasIssue ? "btn-danger" : ""}`; 
+                btn.innerHTML = hasIssue ? "View Issue" : "Add Issue";
+                
+                btn.onclick = function () {
                     self.viewIssue(question);
-                } else {
-                    self.addIssue(question);
-                }
+                };
+
+                btns.push(btn);
             }
 
-            btns.push(btn);
+            btn = document.createElement('button');
+            btn.type = "button";
+            btn.style.margin = "5px";
+
+            btn.className = `issue-btn btn`; 
+            btn.innerHTML = "Add Issue";
             
-            var header = options
-                .htmlElement
-                .querySelector("h5");
+            btn.onclick = function () {
+                self.addIssue(question);
+            };
+            btns.push(btn);
+
+            // Render HTML
+            var header = options.htmlElement.querySelector("h5");
+            if (hasIssue){
+                header.style.color = "red";
+            }
             var span = document.createElement("span");
-            span.innerHTML = "  ";
-            console.log(header.parentElement);
+            span.style.position = "absolute";
+            span.style.right = "28px";
             header.parentElement.style.display = "flex";
             header.parentElement.style.flexFlow = "row";
             header.parentElement.append(span);
@@ -141,27 +191,30 @@ class Survey extends Component {
             btns.map(b => {
                 return span.append(b);
             })
-            
         });
     }
 
     render() {
-        Sjs.FunctionFactory
-        .Instance
-        .register("qaValidator", this.qaValidator);
-
-        let survey = this.state.model !== null ? <Sjs.Survey model={this.state.model} onComplete={() => this.onComplete()}/> : null;
-        
-        if(this.state.model){
-            this.addIssueButtons();
-            
+        // Don't think this check is needed anymore
+        // Leaving it in to show the possible ways to handle errors.
+        let survey = (<h2>Loading...</h2>);
+        if(this.state.model !== null){
+            this.addIssueButtons(this.state.model);
+            survey = (
+            <Sjs.Survey 
+                model={this.state.model} 
+                onComplete={(survey, options) => this.onComplete(survey, options)}
+                onValidateQuestion={this.qaValidator}/> 
+            )
         }
+            
+            
         
         return (
             <div style={{maxWidth: '75vw'}}>
-                <h2>Survey</h2>
-                <button onClick={() => this.loadSurvey()}>Load Survey</button>
-                <button onClick={() => this.clearSurvey()}>Clear Survey</button>
+                <h1>{this.state.json ? this.state.json.title : "LOADING SURVEY..."}</h1>
+                <button style={{margin: '5px'}} onClick={() => this.loadSurveyData()}>Load Entry</button>
+                <button style={{margin: '5px'}} onClick={() => this.clearSurvey()}>Clear Survey</button>
                 <br/>
                 {survey}
             </div>

@@ -15,15 +15,12 @@ import $ from "jquery";
 import "jquery-ui/ui/widgets/datepicker.js";
 import "select2/dist/js/select2.js";
 import "jquery-bar-rating";
-
-//import "icheck/skins/square/blue.css";
 import "pretty-checkbox/dist/pretty-checkbox.css";
 
 import * as widgets from "surveyjs-widgets";
 
 // TO USE DEFAULT THEMES
 SurveyJSCreator.StylesManager.applyTheme("stone");
-
 
 
 // // CUSTOM CSS FOR SURVEY (UGLY LIME GREEN)
@@ -47,6 +44,7 @@ SurveyJSCreator.StylesManager.applyTheme("stone");
 // SurveyJSCreator
 //     .StylesManager
 //     .applyTheme();
+/////////////////////////-*
 
 //widgets.icheck(SurveyKo, $);
 widgets.prettycheckbox(SurveyKo);
@@ -63,99 +61,11 @@ widgets.autocomplete(SurveyKo, $);
 widgets.bootstrapslider(SurveyKo);
 
 class SurveyCreator extends Component {
-  formId = 0;
-  surveyCreator;
-  componentDidMount() {
-    let options = { 
-      showEmbededSurveyTab: false, // Provides embedding options for the form. Disable in production
-      showTestSurveyTab: true, // Testable version of the form while creating
-      showInvisibleElementsInTestSurveyTab: true, // Will show elements hidden by the logic properties
-      showJSONEditorTab: true, // Shows JSON of form (great for debugging). Disable in production
-      showLogicTab: false, 
-      designerHeight: '900px',
-      showState: true, // Displays status of survey "Modified, Saved, Saving..."
-      // showPagesToolbox: false, // Disable pages
-      // showPagesInTestSurveyTab: false, 
-      // allowControlSurveyTitleVisibility: false,
-      // questionTypes: ["text", "comment", "checkbox", "radiogroup", "dropdown", 'rating', 'boolean']
-    };
-    this.surveyCreator = new SurveyJSCreator.SurveyCreator(
-      null,
-      options
-    );
-    // Ensure unique question names
-    // this.surveyCreator.ensureUniqueNames();
-
-    // Filter toolbox items to only allowed items
-    // Can run a console.log on this.surveyCreator.toolbox.itemNames and add or remove items in this.toolboxItems
-    this.surveyCreator.toolbox.itemNames.forEach(item => {
-      if (this.allowedToolboxItems.indexOf(item) === -1){
-        this.surveyCreator.toolbox.removeItem(item);
-      }
-    });
-
-    // Sets layout of toolbox & properties tabs
-    this.surveyCreator.showToolbox = 'left';
-    this.surveyCreator.showPropertyGrid = 'left';
-    this.surveyCreator.leftContainerActiveItem("toolbox");
-    // Declare the function to handle saving
-    this.surveyCreator.saveSurveyFunc = this.saveSurvey;
-    
-    // Create a custom tabs
-    this.surveyCreator.tabs().push({
-      name: "faq-template",
-      title: "FAQ",
-      template: "faq-tab-survey-templates",
-      action: () => {
-          this.surveyCreator.makeNewViewActive("faq-template");
-      },
-      data: {},
-    });
-    this.surveyCreator.tabs().push({
-      name: "help-template",
-      title: "Help",
-      template: "help-tab-survey-templates",
-      action: () => {
-          this.surveyCreator.makeNewViewActive("help-template");
-      },
-      data: {},
-    });
-    
-    this.surveyCreator.render("surveyCreatorContainer");
-
-    this.loadSurvey(this.formId);
-    console.log(this.surveyCreator);
-
-  }
-  render() {
-    return (<div>
-      <script type="text/html" id="faq-tab-survey-templates">
-        {/* Put custom custom tabs code here */}
-        {`<div id="test">Custom FAQ page</div>`}
-      </script>
-      <script type="text/html" id="help-tab-survey-templates">
-        {/* Put custom custom tabs code here */}
-        {`<div id="test">Custom HELP page</div>`}
-      </script>
-
-      <div id="surveyCreatorContainer" style={{width:'100vw'}}/>
-    </div>);
-  }
-  saveSurvey = () => {
-    console.log("Creator:",this.surveyCreator);
-    console.log("Data:",this.surveyCreator.text);
-
-    // Save form to api endpoint here
-    // updating a form use the edit form endpoint and use ID from this.formId
-
-  };
-
+  // Form Id used to retrieve form(survey) data
+  formId = 1;
+  // Form Data 
   json = {
-    title: "Survey Title&Logo demo",
-    description: "Please take look at the survey title and logo. Test the settings on the right panel ->",
-    logo: "https://surveyjs.io/favicon.ico",
-    logoWidth: 60,
-    logoHeight: 60,
+    title: "SSSF Prototype",
     questions: [
       {
           name: "name",
@@ -163,7 +73,6 @@ class SurveyCreator extends Component {
           title: "Please enter your name:",
           placeHolder: "Jon Snow",
           isRequired: true,
-          custom: 99
       }, {
           name: "birthdate",
           type: "text",
@@ -190,7 +99,6 @@ class SurveyCreator extends Component {
       }
     ]
   };
-
   // Allowed toolbox items
   allowedToolboxItems = [
     'text',
@@ -202,19 +110,111 @@ class SurveyCreator extends Component {
     'boolean',
     'datepicker'   
   ];
+  // Options for the survey creator
+  options = { 
+    showEmbededSurveyTab: false, // Provides embedding options for the form. Disable in production
+    showTestSurveyTab: true, // Testable version of the form while creating
+    showInvisibleElementsInTestSurveyTab: true, // Will show elements hidden by the logic properties
+    showJSONEditorTab: true, // Shows JSON of form (great for debugging). Disable in production
+    showLogicTab: false, 
+    designerHeight: '900px',
+    showState: true, // Displays status of survey "Modified, Saved, Saving..."
+    // showPagesToolbox: false, // Disable pages
+    // showPagesInTestSurveyTab: false, 
+    // allowControlSurveyTitleVisibility: false,
+    // questionTypes: ["text", "comment", "checkbox", "radiogroup", "dropdown", 'rating', 'boolean'] // limits toolbox item types 
+  };
+  // Instance of Survey Creator
+  surveyCreator;
+  
+  
+  componentDidMount() {
+    this.surveyCreator = new SurveyJSCreator.SurveyCreator(null, this.options);
+    this.filterToolboxItems();
+    this.setCreatorLayout();
+    this.createCustomTabs();
 
+    // Declare the function to handle saving
+    this.surveyCreator.saveSurveyFunc = this.saveSurvey;
+    this.surveyCreator.render("surveyCreatorContainer");
+
+    this.loadSurvey(this.formId);
+    console.log(this.surveyCreator.state, this.surveyCreator.stateValue);
+  }
+  
   loadSurvey = (id) => {
     if (id) {
       // Fetch form data from api
-
-      // let form = ApiResponse;
-      // this.surveyCreator.text = form.data;
-    } else {
+      // Example:
       let text = JSON.stringify(this.json);
       this.surveyCreator.text = text;
-    }
-    
+    }    
   }
+
+  saveSurvey = () => {
+    console.log("Creator:",this.surveyCreator);
+    console.log("Data:",this.surveyCreator.JSON);
+    // Save form to api endpoint here. Use this.surveyCreator.JSON
+    // updating a form use the edit form endpoint and use ID from this.formId
+  };
+
+  createCustomTabs = () => {
+    // Create custom tabs for the creator. Will not be included in survey
+    //Examples:
+    //Faq Tab
+    this.surveyCreator.tabs().push({
+      name: "faq-template",
+      title: "FAQ",
+      template: "faq-tab-survey-templates",
+      action: () => {
+          this.surveyCreator.makeNewViewActive("faq-template");
+      },
+      data: {},
+    });
+
+    // Help Tab
+    this.surveyCreator.tabs().push({
+      name: "help-template",
+      title: "Help",
+      template: "help-tab-survey-templates",
+      action: () => {
+          this.surveyCreator.makeNewViewActive("help-template");
+      },
+      data: {},
+    });
+  }
+
+  filterToolboxItems = () => {
+    // Filter toolbox items to only allowed items
+    // Can run a console.log on this.surveyCreator.toolbox.itemNames and add or remove items in this.toolboxItems
+    this.surveyCreator.toolbox.itemNames.forEach(item => {
+      if (this.allowedToolboxItems.indexOf(item) === -1){
+        this.surveyCreator.toolbox.removeItem(item);
+      }
+    });
+  }
+
+  setCreatorLayout = () => {
+    // Sets layout of toolbox & properties tabs
+    this.surveyCreator.showToolbox = 'left';
+    this.surveyCreator.showPropertyGrid = 'left';
+    this.surveyCreator.leftContainerActiveItem("toolbox");
+  }
+
+  render() {
+    return (<div>
+      <script type="text/html" id="faq-tab-survey-templates">
+        {/* Put custom custom tabs code here */}
+        {`<div id="test">Custom FAQ page</div>`}
+      </script>
+      <script type="text/html" id="help-tab-survey-templates">
+        {/* Put custom custom tabs code here */}
+        {`<div id="test">Custom HELP page</div>`}
+      </script>
+
+      <div id="surveyCreatorContainer" style={{width:'100vw'}}/>
+    </div>);
+  } 
 }
 
 export default SurveyCreator;
