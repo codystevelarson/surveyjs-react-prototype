@@ -3,19 +3,19 @@ import * as SurveyKo from "survey-knockout";
 import * as SurveyJSCreator from "survey-creator";
 import "survey-creator/survey-creator.css";
 
-import "jquery-ui/themes/base/all.css";
-import "nouislider/distribute/nouislider.css";
-import "select2/dist/css/select2.css";
-import "bootstrap-slider/dist/css/bootstrap-slider.css";
+// import "jquery-ui/themes/base/all.css";
+// import "nouislider/distribute/nouislider.css";
+// import "select2/dist/css/select2.css";
+// import "bootstrap-slider/dist/css/bootstrap-slider.css";
 
-import "jquery-bar-rating/dist/themes/css-stars.css";
-import "jquery-bar-rating/dist/themes/fontawesome-stars.css";
+// import "jquery-bar-rating/dist/themes/css-stars.css";
+// import "jquery-bar-rating/dist/themes/fontawesome-stars.css";
 
 import $ from "jquery";
-import "jquery-ui/ui/widgets/datepicker.js";
-import "select2/dist/js/select2.js";
-import "jquery-bar-rating";
-import "pretty-checkbox/dist/pretty-checkbox.css";
+// import "jquery-ui/ui/widgets/datepicker.js";
+// import "select2/dist/js/select2.js";
+// import "jquery-bar-rating";
+// import "pretty-checkbox/dist/pretty-checkbox.css";
 
 import * as widgets from "surveyjs-widgets";
 
@@ -154,6 +154,8 @@ class SurveyCreator extends Component {
   saveSurvey = () => {
     console.log("Creator:",this.surveyCreator);
     console.log("Data:",this.surveyCreator.JSON);
+    console.log('[FORM DATA FOR API]', JSON.stringify(this.surveyCreator.JSON));
+
     // Save form to api endpoint here. Use this.surveyCreator.JSON
     // updating a form use the edit form endpoint and use ID from this.formId
   };

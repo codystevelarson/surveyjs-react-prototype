@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import * as Sjs from 'survey-react';
- import "survey-react/survey.css";
+import "survey-react/survey.css";
 
 class Survey extends Component {
     state = {
@@ -18,6 +18,7 @@ class Survey extends Component {
         console.log("Survey", survey);
         console.log("Options", options);
         console.log("Data",survey.data);
+        console.log('[ENTRY DATA FOR API]', JSON.stringify(survey.data));
     }
 
     componentDidMount(){
